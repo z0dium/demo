@@ -7,6 +7,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
+import reactor.core.scheduler.Schedulers;
 
 
 @Component
@@ -15,16 +17,13 @@ public class MyRequestHandler {
 
     private final ScriptService scriptService;
 
-    public Flux<MyOutput> handle(MyRequestBody myRequestBody) {
+    public Flux<MyOutput> handle(Mono<MyRequestBody> myRequestBody) {
 
-        if (!myRequestBody.getOrdered()) {
-            return             scriptService.evaluate(new Function(myRequestBody.getScript1(), 1), myRequestBody.getIterations())
-                    .mergeWith(scriptService.evaluate(new Function(myRequestBody.getScript2(), 2), myRequestBody.getIterations()))
-                    .map(MyUnorderedOutput::new);
-        }else{
-            return           scriptService.evaluate(new Function(myRequestBody.getScript1(), 1), myRequestBody.getIterations())
-                    .zipWith(scriptService.evaluate(new Function(myRequestBody.getScript2(), 2), myRequestBody.getIterations()),
-                            MyOrderedOutput::new);
+        return myRequestBody.flatMapMany(mrb->mrb.getOrdered()?
+            scriptService.evaluate(new Function(mrb.getScript1(), 1), mrb.getIterations())
+                    .zipWith(scriptService.evaluate(new Function(mrb.getScript2(), 2), mrb.getIterations()),MyOrderedOutput::new):
+            scriptService.evaluate(new Function(mrb.getScript1(), 1), mrb.getIterations())
+                    .mergeWith(scriptService.evaluate(new Function(mrb.getScript2(), 2), mrb.getIterations())).map(MyUnorderedOutput::new));
         }
     }
-}
+

@@ -14,10 +14,4 @@ public class MyOutput {
 
     private String output;
 
-    @Override
-    public String toString() {
-        return "MyOutput{" +
-                "output='" + output + '\'' +
-                '}';
-    }
 }

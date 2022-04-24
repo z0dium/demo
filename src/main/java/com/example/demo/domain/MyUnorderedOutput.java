@@ -3,13 +3,13 @@ package com.example.demo.domain;
 import lombok.AllArgsConstructor;
 
 @AllArgsConstructor
-public class MyUnorderedOutput extends MyOutput{
+public class MyUnorderedOutput extends MyOutput {
 
-    public MyUnorderedOutput(FunctionResult functionResult){
+    public MyUnorderedOutput(FunctionResult functionResult) {
         super(new StringBuilder()
-                .append("<").append(functionResult.getFunctionIteration()).append(">,")
-                .append("<").append(functionResult.getFunctionNumber()).append(">,")
-                .append("<").append(functionResult.getResult()).append(">,")
-                .append("<").append(functionResult.getTimer()).append(">").toString());
+                .append(functionResult.getFunctionIteration()).append(",")
+                .append(functionResult.getFunctionNumber()).append(",")
+                .append(functionResult.getResult()).append(",")
+                .append(functionResult.getTimer()).toString());
     }
 }
